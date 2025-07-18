@@ -1,4 +1,4 @@
-# TatinWrapper
+# TatinCLI
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
@@ -7,7 +7,7 @@ A command-line interface for the [Tatin](https://tatin.dev) package manager, all
 
 ## Overview
 
-TatinWrapper bridges the gap between Tatin's APL session commands and standard shell environments. Instead of working within the APL session, you can now manage your APL packages directly from your terminal.
+TatinCLI bridges the gap between Tatin's APL session commands and standard shell environments. Instead of working within the APL session, you can now manage your APL packages directly from your terminal.
 
 ### Before (APL Session):
 ```apl
@@ -35,7 +35,7 @@ tatin uninstall APLPage
 
 ```bash
 # Download and install in one command
-curl -o tatin https://raw.githubusercontent.com/Bombardier-C-Kram/TatinWrapper/refs/heads/main/tatin && \
+curl -o tatin https://raw.githubusercontent.com/Bombardier-C-Kram/TatinCLI/refs/heads/main/tatin && \
 chmod +x tatin && \
 sudo mv tatin /usr/local/bin/
 ```
@@ -44,7 +44,7 @@ sudo mv tatin /usr/local/bin/
 
 1. Download the script:
    ```bash
-   curl -o tatin https://raw.githubusercontent.com/Bombardier-C-Kram/TatinWrapper/refs/heads/main/tatin
+   curl -o tatin https://raw.githubusercontent.com/Bombardier-C-Kram/TatinCLI/refs/heads/main/tatin
    ```
 
 2. Make the script executable:
@@ -104,7 +104,7 @@ tatin update --verbose                  # Update all packages with verbose outpu
 
 ## Architecture
 
-TatinWrapper is built using:
+TatinCLI is built using:
 - **DyalogScript**: The main executable wrapper
 - **⎕SE.Tatin API**: Leverages Dyalog's built-in Tatin functionality
 - **Command-line parsing**: Robust argument processing with options support

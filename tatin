@@ -1,5 +1,5 @@
 #!/bin/env dyalogscript
-⍝ TatinWrapper - Command line interface for Tatin package manager
+⍝ TatinCLI - Command line interface for Tatin package manager
 ⍝ Usage: tatin <command> [options] [arguments]
 ⎕SE.(⍎⊃2⎕FIX'/StartupSession.aplf',⍨2⎕NQ#'GetEnvironment' 'DYALOG')
 
@@ -11,13 +11,15 @@ DebugLog←{
 }
 
 ⍝ Parse command line arguments into command, options, and arguments
-∇ result←ParseArgs args
+⍝ Returns a namespace with parsed components
+∇ result←ParseArgs args;targetIdx;command;rest;options;arguments;target
     _←DebugLog'ParseArgs called with: ',⍕args
     ⍝ Handle empty args case
     :If 0=≢args
-    _←DebugLog'No args provided, defaulting to help'
-    result←'help' ⍬ ⍬ './packages'
-    :Return
+        _←DebugLog'No args provided, defaulting to help'
+        result←⎕NS''
+        result.(command options arguments target)←'help' ⍬ ⍬ './packages'
+        :Return
     :EndIf
     ⍝ Look for --verbose flag and set global
     VERBOSE←∨/('--verbose' '-v')∊⍨args
@@ -26,11 +28,11 @@ DebugLog←{
     targetIdx←args⍳⊂'--target'
     ⍝ Process --target option if found
     :If targetIdx≤≢args
-    :If (targetIdx+1)≤≢args
-    target←(targetIdx+1)⊃args
-    :EndIf
-    ⍝ Remove --target and its value from args
-    args←args~(targetIdx,targetIdx+1)⊃¨⊂args
+        :If (targetIdx+1)≤≢args
+            target←(targetIdx+1)⊃args
+        :EndIf
+        ⍝ Remove --target and its value from args
+        args←args~(targetIdx,targetIdx+1)⊃¨⊂args
     :EndIf
     ⍝ Remove verbose flags from args
     args←args~'--verbose' '-v'
@@ -44,58 +46,55 @@ DebugLog←{
     _←DebugLog'Parsed command: "',command,'"'
     _←DebugLog'Parsed target: "',target,'"'
     _←DebugLog'Parsed arguments: ',⍕arguments
-    result←command options arguments target
+    ⍝ Create namespace result
+    result←⎕NS''
+    result.(command options arguments target)←command options arguments target
 ∇
 
 ⍝ Valid commands
 GetValidCommands←{'install' 'i' 'uninstall' 'u' 'list' 'l' 'search' 's' 'update' 'info' 'help' 'version'}
 
-⍝ Show help information and return exit code
+⍝ Show help information and return help text
 ShowHelp←{
-    _←DebugLog'ShowHelp called'
-    ⎕←'TatinWrapper - Command line interface for Tatin package manager'
-    ⎕←''
-    ⎕←'USAGE:'
-    ⎕←'  tatin <command> [options] [arguments]'
-    ⎕←''
-    ⎕←'COMMANDS:'
-    ⎕←'  install, i <package>    Install a package from a registry'
-    ⎕←'  uninstall, u <package>  Uninstall a package from the target directory'
-    ⎕←'  list, l                 List all installed packages'
-    ⎕←'  search, s <query>       Search for packages in registries'
-    ⎕←'  update                  Update all installed packages to latest versions'
-    ⎕←'  info [package]          Show package information or Tatin version info'
-    ⎕←'  help                    Show this help message'
-    ⎕←'  version                 Show TatinWrapper version information'
-    ⎕←''
-    ⎕←'OPTIONS:'
-    ⎕←'  -h, --help              Show help information'
-    ⎕←'  -v, --verbose           Enable verbose output for debugging'
-    ⎕←'  --target <path>         Specify target directory (default: ./packages)'
-    ⎕←''
-    ⎕←'EXAMPLES:'
-    ⎕←'  tatin install APLPage                    # Install APLPage to ./packages'
-    ⎕←'  tatin i JWTAPL --target ./libs          # Install JWTAPL to ./libs'
-    ⎕←'  tatin list --target ./packages          # List packages in ./packages'
-    ⎕←'  tatin search JSON                       # Search for JSON-related packages'
-    ⎕←'  tatin update --verbose                  # Update all packages with verbose output'
-    ⎕←'  tatin uninstall APLPage                 # Uninstall APLPage from ./packages'
-    ⎕←'  tatin info APLPage                      # Show information about APLPage'
-    ⎕←'  tatin info                              # Show Tatin version information'
-    ⎕←''
-    ⎕←'NOTES:'
-    ⎕←'  - Package names can include version specifiers (e.g., APLPage-1.0.0)'
-    ⎕←'  - The update command will check for and install newer versions of all packages'
-    ⎕←'  - Use --verbose to see detailed operation logs'
-    ⎕←'  - The default target directory is ./packages relative to current directory'
+    helpText←'TatinCLI - Command line interface for Tatin package manager',(⎕UCS 10)
+    helpText,←(⎕UCS 10),'USAGE:',(⎕UCS 10)
+    helpText,←'  tatin <command> [options] [arguments]',(⎕UCS 10),(⎕UCS 10)
+    helpText,←'COMMANDS:',(⎕UCS 10)
+    helpText,←'  install, i <package>    Install a package from a registry',(⎕UCS 10)
+    helpText,←'  uninstall, u <package>  Uninstall a package from the target directory',(⎕UCS 10)
+    helpText,←'  list, l                 List all installed packages',(⎕UCS 10)
+    helpText,←'  search, s <query>       Search for packages in registries',(⎕UCS 10)
+    helpText,←'  update                  Update all installed packages to latest versions',(⎕UCS 10)
+    helpText,←'  info [package]          Show package information or Tatin version info',(⎕UCS 10)
+    helpText,←'  help                    Show this help message',(⎕UCS 10)
+    helpText,←'  version                 Show TatinCLI version information',(⎕UCS 10),(⎕UCS 10)
+    helpText,←'OPTIONS:',(⎕UCS 10)
+    helpText,←'  -h, --help              Show help information',(⎕UCS 10)
+    helpText,←'  -v, --verbose           Enable verbose output for debugging',(⎕UCS 10)
+    helpText,←'  --target <path>         Specify target directory (default: ./packages)',(⎕UCS 10),(⎕UCS 10)
+    helpText,←'EXAMPLES:',(⎕UCS 10)
+    helpText,←'  tatin install APLPage                    # Install APLPage to ./packages',(⎕UCS 10)
+    helpText,←'  tatin i JWTAPL --target ./libs          # Install JWTAPL to ./libs',(⎕UCS 10)
+    helpText,←'  tatin list --target ./packages          # List packages in ./packages',(⎕UCS 10)
+    helpText,←'  tatin search JSON                       # Search for JSON-related packages',(⎕UCS 10)
+    helpText,←'  tatin update --verbose                  # Update all packages with verbose output',(⎕UCS 10)
+    helpText,←'  tatin uninstall APLPage                 # Uninstall APLPage from ./packages',(⎕UCS 10)
+    helpText,←'  tatin info APLPage                      # Show information about APLPage',(⎕UCS 10)
+    helpText,←'  tatin info                              # Show Tatin version information',(⎕UCS 10),(⎕UCS 10)
+    helpText,←'NOTES:',(⎕UCS 10)
+    helpText,←'  - Package names can include version specifiers (e.g., APLPage-1.0.0)',(⎕UCS 10)
+    helpText,←'  - The update command will check for and install newer versions of all packages',(⎕UCS 10)
+    helpText,←'  - Use --verbose to see detailed operation logs',(⎕UCS 10)
+    helpText,←'  - The default target directory is ./packages relative to current directory'
     _←DebugLog'Help text prepared'
+    _←{⍞←⍵}¨helpText
     0
 }
 
 ⍝ Show version information and return exit code
 ShowVersion←{
     _←DebugLog'ShowVersion called'
-    ⎕←'TatinWrapper v1.0.0'
+    ⎕←'TatinCLI v1.0.1'
     ⎕←'Dyalog APL wrapper for Tatin package manager'
     _←DebugLog'Version info prepared'
     0
@@ -103,7 +102,8 @@ ShowVersion←{
 
 ⍝ Execute command using Tatin functionality
 ExecuteCommand←{
-    command options arguments target←⍵
+    parsedArgs←⍵
+    command options arguments target←parsedArgs.(command options arguments target)
     _←DebugLog'ExecuteCommand called with command: "',command,'"'
     _←DebugLog'ExecuteCommand options: ',⍕options
     _←DebugLog'ExecuteCommand arguments: ',⍕arguments
@@ -329,7 +329,8 @@ Main←{
     
     (0=≢args):ShowHelp⍬
     
-    command options arguments target←ParseArgs args
+    parsedArgs←ParseArgs args
+    command←parsedArgs.command
     _←DebugLog'Main got command: "',command,'"'
     
     ⍝ Handle help command
@@ -353,7 +354,7 @@ Main←{
     
     ⍝ Execute command
     _←DebugLog'Executing command'
-    result←ExecuteCommand command options arguments target
+    result←ExecuteCommand parsedArgs
     ⎕←result
     _←DebugLog'Command executed successfully'
     0
@@ -361,6 +362,7 @@ Main←{
 
 ⍝ Test if ⎕SE.Tatin is available and activate if needed
 Activate←{
+    dummy←⍵
     _←DebugLog'Activate called'
     ⎕←⎕SE.UCMD 'Tools.Activate all'
     ⎕←'Tatin has been activated. Please try running the script again.'
@@ -368,7 +370,7 @@ Activate←{
 }
 
 ⍝ Check if Tatin is available, if not activate it
-:Trap 0
+:Trap 6  ⍝ VALUE ERROR
     dummy←⎕SE.Tatin.Version
 :Else
     _←DebugLog'Tatin not found, activating...'

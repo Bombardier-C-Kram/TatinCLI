@@ -118,7 +118,6 @@ TatinCLI is built using:
 - [ ] Support for package rollback/downgrade
 - [ ] Add shell completion scripts (bash/zsh)
 - [ ] Create CI/CD integration
-- [ ] Support aliases
 
 ## Notes
 

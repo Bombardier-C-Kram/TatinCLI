@@ -52,7 +52,7 @@ DebugLog←{
 ∇
 
 ⍝ Valid commands
-GetValidCommands←{'install' 'i' 'uninstall' 'u' 'list' 'l' 'search' 's' 'update' 'info' 'help' 'version'}
+GetValidCommands←{,¨'install' 'i' 'uninstall' 'u' 'list' 'l' 'search' 's' 'update' 'info' 'help' 'version'}
 
 ⍝ Show help information and return help text
 ShowHelp←{
@@ -94,7 +94,7 @@ ShowHelp←{
 ⍝ Show version information and return exit code
 ShowVersion←{
     _←DebugLog'ShowVersion called'
-    ⎕←'TatinCLI v1.0.1'
+    ⎕←'TatinCLI v1.0.2'
     ⎕←'Dyalog APL wrapper for Tatin package manager'
     _←DebugLog'Version info prepared'
     0
@@ -107,18 +107,19 @@ ExecuteCommand←{
     _←DebugLog'ExecuteCommand called with command: "',command,'"'
     _←DebugLog'ExecuteCommand options: ',⍕options
     _←DebugLog'ExecuteCommand arguments: ',⍕arguments
+    ⎕←⍴command
     
     ⍝ Handle install commands
-    ((command≡'install')∨(command≡'i')):HandleInstall arguments target
+    ((command≡'install')∨(command≡,'i')):HandleInstall arguments target
     
     ⍝ Handle uninstall commands
-    ((command≡'uninstall')∨(command≡'u')):HandleUninstall arguments target
+    ((command≡'uninstall')∨(command≡,'u')):HandleUninstall arguments target
     
     ⍝ Handle list commands
-    ((command≡'list')∨(command≡'l')):HandleList target
+    ((command≡'list')∨(command≡,'l')):HandleList target
     
     ⍝ Handle search commands
-    ((command≡'search')∨(command≡'s')):HandleSearch arguments
+    ((command≡'search')∨(command≡,'s')):HandleSearch arguments
     
     ⍝ Handle update commands
     (command≡'update'):HandleUpdate target
@@ -342,7 +343,7 @@ Main←{
     ⍝ Validate command
     validCommands←GetValidCommands ⍬
     _←DebugLog'Valid commands: ',⍕validCommands
-    isValid←+/(⊂command)⍷validCommands
+    isValid←+/(⊂∊command)(≡∨1∊⍷)validCommands
     _←DebugLog'Command "',command,'" is valid: ',⍕isValid
     
     (~isValid):{

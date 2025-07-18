@@ -31,15 +31,37 @@ tatin uninstall APLPage
 
 ## Installation
 
-1. Clone or download this repository
+### Quick Install (Recommended)
+
+```bash
+# Download and install in one command
+curl -o tatin https://raw.githubusercontent.com/Bombardier-C-Kram/TatinWrapper/refs/heads/main/tatin && \
+chmod +x tatin && \
+sudo mv tatin /usr/local/bin/
+```
+
+### Manual Installation
+
+1. Download the script:
+   ```bash
+   curl -o tatin https://raw.githubusercontent.com/Bombardier-C-Kram/TatinWrapper/refs/heads/main/tatin
+   ```
+
 2. Make the script executable:
    ```bash
    chmod +x tatin
    ```
-3. Optionally, add the script to your PATH for system-wide access:
+
+3. Move to system PATH (optional but recommended):
    ```bash
-   sudo cp tatin /usr/local/bin/
+   sudo mv tatin /usr/local/bin/
    ```
+
+### Verify Installation
+
+```bash
+tatin version
+```
 
 ## Usage
 
@@ -87,15 +109,6 @@ TatinWrapper is built using:
 - **⎕SE.Tatin API**: Leverages Dyalog's built-in Tatin functionality
 - **Command-line parsing**: Robust argument processing with options support
 
-## Features
-
-- ✅ **Full Tatin API Coverage**: Install, uninstall, list, search, update, and info commands
-- ✅ **Flexible Target Directories**: Specify custom installation paths
-- ✅ **Short Command Aliases**: Use `i`, `u`, `l`, `s` for common operations
-- ✅ **Verbose Mode**: Debug and trace operations with `--verbose`
-- ✅ **Package Version Support**: Handle version specifiers (e.g., `APLPage-1.0.0`)
-- ✅ **Comprehensive Help**: Built-in help system with examples
-
 ## TODO
 
 - [ ] Add support for Windows environments
@@ -105,7 +118,7 @@ TatinWrapper is built using:
 - [ ] Support for package rollback/downgrade
 - [ ] Add shell completion scripts (bash/zsh)
 - [ ] Create CI/CD integration
-- [ ] Supprt aliases
+- [ ] Support aliases
 
 ## Notes
 
@@ -121,4 +134,4 @@ Contributions are welcome! This project is written in Dyalog APL.
 
 ## License
 
-This projects license can be found [here](LICENSE.MD)
+This project's license can be found [here](LICENSE.MD)

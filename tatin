@@ -1,0 +1,396 @@
+#!/bin/env dyalogscript
+⍝ TatinWrapper - Command line interface for Tatin package manager
+⍝ Usage: tatin <command> [options] [arguments]
+⎕SE.(⍎⊃2⎕FIX'/StartupSession.aplf',⍨2⎕NQ#'GetEnvironment' 'DYALOG')
+
+
+⍝ Debug logging function - only prints if verbose mode is enabled
+DebugLog←{
+    VERBOSE:⎕←'DEBUG: ',⍵
+    ⍬
+}
+
+⍝ Parse command line arguments into command, options, and arguments
+∇ result←ParseArgs args
+    _←DebugLog'ParseArgs called with: ',⍕args
+    ⍝ Handle empty args case
+    :If 0=≢args
+    _←DebugLog'No args provided, defaulting to help'
+    result←'help' ⍬ ⍬ './packages'
+    :Return
+    :EndIf
+    ⍝ Look for --verbose flag and set global
+    VERBOSE←∨/('--verbose' '-v')∊⍨args
+    ⍝ Parse --target option
+    target←'./packages'  ⍝ Default target
+    targetIdx←args⍳⊂'--target'
+    ⍝ Process --target option if found
+    :If targetIdx≤≢args
+    :If (targetIdx+1)≤≢args
+    target←(targetIdx+1)⊃args
+    :EndIf
+    ⍝ Remove --target and its value from args
+    args←args~(targetIdx,targetIdx+1)⊃¨⊂args
+    :EndIf
+    ⍝ Remove verbose flags from args
+    args←args~'--verbose' '-v'
+    ⍝ Extract command and remaining arguments
+    command←⊃args
+    rest←1↓args
+    options←''
+    ⍝ Simple parsing - for now just collect everything as arguments
+    ⍝ We'll implement proper option parsing later
+    arguments←rest
+    _←DebugLog'Parsed command: "',command,'"'
+    _←DebugLog'Parsed target: "',target,'"'
+    _←DebugLog'Parsed arguments: ',⍕arguments
+    result←command options arguments target
+∇
+
+⍝ Valid commands
+GetValidCommands←{'install' 'i' 'uninstall' 'u' 'list' 'l' 'search' 's' 'update' 'info' 'help' 'version'}
+
+⍝ Show help information and return exit code
+ShowHelp←{
+    _←DebugLog'ShowHelp called'
+    ⎕←'TatinWrapper - Command line interface for Tatin package manager'
+    ⎕←''
+    ⎕←'USAGE:'
+    ⎕←'  tatin <command> [options] [arguments]'
+    ⎕←''
+    ⎕←'COMMANDS:'
+    ⎕←'  install, i <package>    Install a package from a registry'
+    ⎕←'  uninstall, u <package>  Uninstall a package from the target directory'
+    ⎕←'  list, l                 List all installed packages'
+    ⎕←'  search, s <query>       Search for packages in registries'
+    ⎕←'  update                  Update all installed packages to latest versions'
+    ⎕←'  info [package]          Show package information or Tatin version info'
+    ⎕←'  help                    Show this help message'
+    ⎕←'  version                 Show TatinWrapper version information'
+    ⎕←''
+    ⎕←'OPTIONS:'
+    ⎕←'  -h, --help              Show help information'
+    ⎕←'  -v, --verbose           Enable verbose output for debugging'
+    ⎕←'  --target <path>         Specify target directory (default: ./packages)'
+    ⎕←''
+    ⎕←'EXAMPLES:'
+    ⎕←'  tatin install APLPage                    # Install APLPage to ./packages'
+    ⎕←'  tatin i JWTAPL --target ./libs          # Install JWTAPL to ./libs'
+    ⎕←'  tatin list --target ./packages          # List packages in ./packages'
+    ⎕←'  tatin search JSON                       # Search for JSON-related packages'
+    ⎕←'  tatin update --verbose                  # Update all packages with verbose output'
+    ⎕←'  tatin uninstall APLPage                 # Uninstall APLPage from ./packages'
+    ⎕←'  tatin info APLPage                      # Show information about APLPage'
+    ⎕←'  tatin info                              # Show Tatin version information'
+    ⎕←''
+    ⎕←'NOTES:'
+    ⎕←'  - Package names can include version specifiers (e.g., APLPage-1.0.0)'
+    ⎕←'  - The update command will check for and install newer versions of all packages'
+    ⎕←'  - Use --verbose to see detailed operation logs'
+    ⎕←'  - The default target directory is ./packages relative to current directory'
+    _←DebugLog'Help text prepared'
+    0
+}
+
+⍝ Show version information and return exit code
+ShowVersion←{
+    _←DebugLog'ShowVersion called'
+    ⎕←'TatinWrapper v1.0.0'
+    ⎕←'Dyalog APL wrapper for Tatin package manager'
+    _←DebugLog'Version info prepared'
+    0
+}
+
+⍝ Execute command using Tatin functionality
+ExecuteCommand←{
+    command options arguments target←⍵
+    _←DebugLog'ExecuteCommand called with command: "',command,'"'
+    _←DebugLog'ExecuteCommand options: ',⍕options
+    _←DebugLog'ExecuteCommand arguments: ',⍕arguments
+    
+    ⍝ Handle install commands
+    ((command≡'install')∨(command≡'i')):HandleInstall arguments target
+    
+    ⍝ Handle uninstall commands
+    ((command≡'uninstall')∨(command≡'u')):HandleUninstall arguments target
+    
+    ⍝ Handle list commands
+    ((command≡'list')∨(command≡'l')):HandleList target
+    
+    ⍝ Handle search commands
+    ((command≡'search')∨(command≡'s')):HandleSearch arguments
+    
+    ⍝ Handle update commands
+    (command≡'update'):HandleUpdate target
+    
+    ⍝ Handle info commands
+    (command≡'info'):HandleInfo arguments
+    
+    ⍝ Default case
+    _←DebugLog'No matching command handler found'
+    'Command "',command,'" not yet implemented.'
+}
+
+⍝ Handle install command
+HandleInstall←{
+    arguments target←⍵
+    _←DebugLog'HandleInstall called with: ',⍕arguments,' target: ',target
+    
+    (0=≢arguments):{
+        ⎕←'Error: install command requires a package name'
+        ⎕←'Usage: tatin install <package> [--target <path>]'
+        'Installation failed: no package specified'
+    }⍬
+    
+    package←⊃arguments
+    
+    _←DebugLog'Installing package: ',package,' to: ',target
+    
+    ⍝ Call Tatin InstallPackages
+    result←⎕SE.Tatin.InstallPackages package target
+    ⎕←'Successfully installed: ',⍕result
+    'Package installed successfully'
+}
+
+⍝ Handle uninstall command
+HandleUninstall←{
+    arguments target←⍵
+    _←DebugLog'HandleUninstall called with: ',⍕arguments,' target: ',target
+    
+    (0=≢arguments):{
+        ⎕←'Error: uninstall command requires a package name'
+        ⎕←'Usage: tatin uninstall <package> [--target <path>]'
+        'Uninstallation failed: no package specified'
+    }⍬
+    
+    package←⊃arguments
+    
+    _←DebugLog'Uninstalling package: ',package,' from: ',target
+    
+    ⍝ Call Tatin UnInstallPackages
+    (list msg)←⎕SE.Tatin.UnInstallPackages package target
+    ⎕←'Successfully uninstalled: ',⍕list
+    (0<≢msg):⎕←'Message: ',msg
+    'Package uninstalled successfully'
+}
+
+⍝ Handle list command
+HandleList←{
+    target←⍵
+    _←DebugLog'HandleList called with target: ',target
+    
+    _←DebugLog'Listing packages in: ',target
+    
+    ⍝ Try to read dependency file or build list
+    depFile←target,'/apl-dependencies.txt'
+    buildFile←target,'/apl-buildlist.json'
+    
+    :If ⎕NEXISTS depFile
+        deps←⊃⎕NGET depFile 1
+        ⎕←'Installed packages (from apl-dependencies.txt):'
+        ⎕←deps
+        'List command completed'
+    :ElseIf ⎕NEXISTS buildFile
+        ⎕←'Build list file found: ',buildFile
+        ⎕←'Use a proper JSON parser to read build list details'
+        'List command completed'
+    :Else
+        ⎕←'No package information found in: ',target
+        ⎕←'No apl-dependencies.txt or apl-buildlist.json file found'
+        'List command completed'
+    :EndIf
+}
+
+⍝ Handle search command
+HandleSearch←{
+    args←⍵
+    _←DebugLog'HandleSearch called with: ',⍕args
+    
+    (0=≢args):{
+        ⎕←'Error: search command requires a search term'
+        ⎕←'Usage: tatin search <query>'
+        'Search failed: no query specified'
+    }⍬
+    
+    query←⊃args
+    
+    _←DebugLog'Searching for: ',query
+    
+    ⍝ Call Tatin FindDependencies for search
+    result←⎕SE.Tatin.FindDependencies query '[*]'  ⍝ Search all registries
+    ⎕←'Search results for "',query,'":'
+    ⎕←⍕result
+    'Search completed'
+}
+
+⍝ Handle update command
+HandleUpdate←{
+    target←⍵
+    _←DebugLog'HandleUpdate called with target: ',target
+    
+    _←DebugLog'Checking for updates in: ',target
+    
+    ⍝ Call Tatin CheckForLaterVersion
+    result←⎕SE.Tatin.CheckForLaterVersion target
+    
+    ⍝ Check if we got any results
+    (0=≢result):{
+        ⎕←'No packages found or no updates available'
+        'Update check completed - no updates needed'
+    }⍬
+    
+    ⍝ Filter packages that need updates (original ≠ latest)
+    needsUpdate←(result[;1]≢¨result[;2])
+    
+    (0=+/needsUpdate):{
+        ⎕←'All packages are up to date'
+        'Update check completed - no updates needed'
+    }⍬
+    
+    ⍝ Get packages that need updating
+    toUpdate←needsUpdate⌿result
+    
+    ⎕←'Found ',(⍕≢toUpdate),' packages that need updating:'
+    _←{⎕←⍵[1],' → ',⍵[2]}¨↓toUpdate
+    
+    ⍝ Install updates for each package
+    updateResults←⍬
+    
+    ⍝ Function to update a single package
+    UpdatePackage←{
+        originalPkg latestPkg←⍵
+        ⎕←'Updating ',originalPkg,' to ',latestPkg
+        
+        ⍝ First uninstall the old version (with error handling)
+        uninstallResult←{
+            0::⎕←'Warning: Could not uninstall ',originalPkg,' (may not exist)' ⋄ 0
+            (list msg)←⎕SE.Tatin.UnInstallPackages originalPkg target
+            _←DebugLog'Uninstalled: ',⍕list
+            1
+        }⍬
+        
+        ⍝ Then install the new version (with error handling)
+        installResult←{
+            0::{⎕←'Error: Failed to install ',latestPkg ⋄ 'FAILED: ',latestPkg}⍬
+            ⍝ Uninstall the old version first
+            uninstallResult←{
+                0::⎕←{'Warning: Could not uninstall ',originalPkg,' (may not exist)' ⋄ 0}⍬
+                (list msg)←⎕SE.Tatin.UnInstallPackages originalPkg target
+                _←DebugLog'Uninstalled: ',⍕list
+                1
+            }⍬
+            installResult←⎕SE.Tatin.InstallPackages latestPkg target
+            ⎕←'Successfully updated ',originalPkg,' to ',latestPkg
+            latestPkg,' (updated from ',originalPkg,')'
+        }⍬
+        
+        installResult
+    }
+    
+    ⍝ Apply UpdatePackage to each row of toUpdate
+    updateResults←UpdatePackage¨↓toUpdate[;1 2]
+    
+    ⎕←''
+    ⎕←'Update summary:'
+    ⎕←updateResults
+    
+    'Update completed - ',(⍕≢updateResults),' packages processed'
+}
+
+⍝ Handle info command
+HandleInfo←{
+    args←⍵
+    _←DebugLog'HandleInfo called with: ',⍕args
+    
+    (0=≢args):{
+        ⍝ Show Tatin version info
+        version←⎕SE.Tatin.Version
+        ⎕←'Tatin Version Information:'
+        ⎕←'Name: ',⊃version
+        ⎕←'Version: ',2⊃version
+        ⎕←'Date: ',3⊃version
+        'Tatin version info displayed'
+    }⍬
+    
+    package←⊃args
+    
+    _←DebugLog'Getting info for package: ',package
+    
+    ⍝ TODO: Implement package info retrieval
+    ⎕←'Package info for: ',package
+    ⎕←'Package info functionality not yet implemented'
+    'Package info completed'
+}
+
+⍝ Main function
+Main←{
+    args←⍵
+    _←DebugLog'Main called with args: ',⍕args
+    
+    (0=≢args):ShowHelp⍬
+    
+    command options arguments target←ParseArgs args
+    _←DebugLog'Main got command: "',command,'"'
+    
+    ⍝ Handle help command
+    (command≡'help'):ShowHelp⍬
+    
+    ⍝ Handle version command
+    (command≡'version'):ShowVersion⍬
+    
+    ⍝ Validate command
+    validCommands←GetValidCommands ⍬
+    _←DebugLog'Valid commands: ',⍕validCommands
+    isValid←+/(⊂command)⍷validCommands
+    _←DebugLog'Command "',command,'" is valid: ',⍕isValid
+    
+    (~isValid):{
+        _←DebugLog'Invalid command, showing error'
+        ⎕←'Error: Unknown command "',command,'"'
+        ⎕←'Run "tatin help" for usage information.'
+        1
+    }⍬
+    
+    ⍝ Execute command
+    _←DebugLog'Executing command'
+    result←ExecuteCommand command options arguments target
+    ⎕←result
+    _←DebugLog'Command executed successfully'
+    0
+}
+
+⍝ Test if ⎕SE.Tatin is available and activate if needed
+Activate←{
+    _←DebugLog'Activate called'
+    ⎕←⎕SE.UCMD 'Tools.Activate all'
+    ⎕←'Tatin has been activated. Please try running the script again.'
+    ⎕OFF 0
+}
+
+⍝ Check if Tatin is available, if not activate it
+:Trap 0
+    dummy←⎕SE.Tatin.Version
+:Else
+    _←DebugLog'Tatin not found, activating...'
+    Activate⍬
+:EndTrap
+
+⍝ Reset and check for updates
+⎕SE.UCMD 'ureset'
+isUpdated←~('There is no later version')≡25↑⎕SE.UCMD 'UpdateTatin'
+:If isUpdated
+    ⎕←'Tatin has been updated to the latest version.'
+    ⎕←'Please try running the script again.'
+    ⎕OFF 0
+:EndIf
+
+
+
+⍝ Main execution - get arguments and run
+args←1↓⊢2⎕NQ#'GetCommandLineArgs'
+VERBOSE←{(∨/('--verbose' '-v')∊⍨args):1⋄0}⍬
+_←DebugLog'Script starting '
+_←DebugLog'Parsed args: ',⍕args
+exitCode←Main args
+_←DebugLog'Main returned exit code: ',⍕exitCode
+⎕OFF exitCode

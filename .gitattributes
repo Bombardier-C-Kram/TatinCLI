@@ -1,0 +1,14 @@
+# APL files
+*.apl linguist-language=APL
+*.apls linguist-language=APL
+*.aplf linguist-language=APL
+*.aplo linguist-language=APL
+*.apln linguist-language=APL
+*.aplc linguist-language=APL
+*.dyalog linguist-language=APL
+
+# Tatin wrapper script is APL
+tatin linguist-language=APL
+
+# Shell scripts
+*.sh linguist-language=Shell

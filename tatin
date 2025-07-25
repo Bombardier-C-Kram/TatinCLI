@@ -107,7 +107,6 @@ ExecuteCommand←{
     _←DebugLog'ExecuteCommand called with command: "',command,'"'
     _←DebugLog'ExecuteCommand options: ',⍕options
     _←DebugLog'ExecuteCommand arguments: ',⍕arguments
-    ⎕←⍴command
     
     ⍝ Handle install commands
     ((command≡'install')∨(command≡,'i')):HandleInstall arguments target

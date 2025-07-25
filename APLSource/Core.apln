@@ -47,7 +47,7 @@
     ∇
 
     ⍝ Valid commands
-    GetValidCommands←{,¨'install' 'i' 'uninstall' 'u' 'list' 'l' 'search' 's' 'update' 'info' 'help' 'version'}
+    GetValidCommands←{,¨'install' 'i' 'uninstall' 'u' 'list' 'l' 'search' 's' 'update' 'updatetatin' 'info' 'help' 'version'}
 
     ⍝ Show help information and return help text
     ShowHelp←{
@@ -60,6 +60,7 @@
         helpText,←'  list, l                 List all installed packages',(⎕UCS 10)
         helpText,←'  search, s <query>       Search for packages in registries',(⎕UCS 10)
         helpText,←'  update                  Update all installed packages to latest versions',(⎕UCS 10)
+        helpText,←'  updatetatin             Update Tatin itself to the latest version',(⎕UCS 10)
         helpText,←'  info [package]          Show package information or Tatin version info',(⎕UCS 10)
         helpText,←'  help                    Show this help message',(⎕UCS 10)
         helpText,←'  version                 Show TatinCLI version information',(⎕UCS 10),(⎕UCS 10)
@@ -73,6 +74,7 @@
         helpText,←'  tatin list --target ./packages          # List packages in ./packages',(⎕UCS 10)
         helpText,←'  tatin search JSON                       # Search for JSON-related packages',(⎕UCS 10)
         helpText,←'  tatin update --verbose                  # Update all packages with verbose output',(⎕UCS 10)
+        helpText,←'  tatin updatetatin                       # Update Tatin itself to latest version',(⎕UCS 10)
         helpText,←'  tatin uninstall APLPage                 # Uninstall APLPage from ./packages',(⎕UCS 10)
         helpText,←'  tatin info APLPage                      # Show information about APLPage',(⎕UCS 10)
         helpText,←'  tatin info                              # Show Tatin version information',(⎕UCS 10),(⎕UCS 10)

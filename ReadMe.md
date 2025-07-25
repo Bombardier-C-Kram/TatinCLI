@@ -106,6 +106,7 @@ cd "$env:LOCALAPPDATA\TatinCLI"
 | `list` | `l` | List installed packages | `tatin list` |
 | `search` | `s` | Search for packages | `tatin search JSON` |
 | `update` | | Update all packages | `tatin update` |
+| `updatetatin` | | Update Tatin itself | `tatin updatetatin` |
 | `info` | | Show package/version info | `tatin info APLPage` |
 | `help` | | Show help message | `tatin help` |
 | `version` | | Show version info | `tatin version` |
@@ -132,6 +133,7 @@ tatin info                              # Show Tatin version information
 
 # Maintenance
 tatin update --verbose                  # Update all packages with verbose output
+tatin updatetatin                       # Update Tatin itself to latest version
 ```
 
 ## Architecture

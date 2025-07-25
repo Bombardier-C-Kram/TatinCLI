@@ -11,4 +11,5 @@
 tatin linguist-language=APL
 
 # Shell scripts
-*.sh linguist-language=Shell
+*.sh linguist-language=Shell text eol=lf
+*.bat text eol=crlf

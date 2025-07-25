@@ -1,0 +1,12 @@
+main
+args←1↓⊢2⎕NQ#'GetCommandLineArgs'
+VERBOSE←{(∨/('--verbose' '-v')∊⍨args):1⋄0}⍬
+_←Core.DebugLog'Script starting '
+:If 0=⎕NC '⎕SE.Tatin'
+    _←Core.DebugLog'Tatin not found, activating...'
+    Core.Activate
+:EndIf
+_←Core.DebugLog'Parsed args: ',⍕args
+exitCode←Core.Main args
+_←Core.DebugLog'Main returned exit code: ',⍕exitCode
+⎕OFF exitCode

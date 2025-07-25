@@ -26,42 +26,74 @@ tatin uninstall APLPage
 ## Prerequisites
 
 - **Dyalog APL**: Version 20.0 or later
-- **Linux System**: Designed for Linux/Unix environments
 - **DyalogScript**: Must be available in your PATH
+- **Linux/macOS**: `curl` or `wget`, and `unzip`
 
 ## Installation
 
+Use one of the installation methods below:
+
 ### Quick Install (Recommended)
 
+#### Linux/macOS
 ```bash
-# Download and install in one command
-curl -o tatin https://raw.githubusercontent.com/Bombardier-C-Kram/TatinCLI/refs/heads/main/tatin && \
-chmod +x tatin && \
-sudo mv tatin /usr/local/bin/
+# Download and run the installation script
+curl -sSL https://raw.githubusercontent.com/Bombardier-C-Kram/TatinCLI/main/install.sh | bash
 ```
 
-### Manual Installation
+#### Windows
+```powershell
+# Download and run the PowerShell installation script
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Bombardier-C-Kram/TatinCLI/main/install.ps1" -OutFile "install.ps1"
+.\install.ps1
+```
 
-1. Download the script:
-   ```bash
-   curl -o tatin https://raw.githubusercontent.com/Bombardier-C-Kram/TatinCLI/refs/heads/main/tatin
-   ```
+### Alternative: Clone and Install
 
-2. Make the script executable:
-   ```bash
-   chmod +x tatin
-   ```
+If you prefer to clone the repository directly (requires Git), you can do that as well.
 
-3. Move to system PATH (optional but recommended):
-   ```bash
-   sudo mv tatin /usr/local/bin/
-   ```
+### Installation Locations
+
+- **Linux/macOS System-wide**: `/usr/local/lib/tatin-cli/` with symlink in `/usr/local/bin/`
+- **Linux/macOS User-only**: `~/.local/lib/tatin-cli/` with symlink in `~/.local/bin/`
+- **Windows System-wide**: `C:\Program Files\TatinCLI\` (added to system PATH)
+- **Windows User-only**: `%LOCALAPPDATA%\TatinCLI\` (added to user PATH)
 
 ### Verify Installation
 
 ```bash
 tatin version
 ```
+
+> **Note**: After installation, you may need to restart your terminal or command prompt (Windows) to access the `tatin` command.
+
+## Uninstallation
+
+To remove TatinCLI from your system, navigate to the installation directory and run the uninstall script:
+
+### Linux/macOS
+```bash
+# For system-wide installation
+cd /usr/local/lib/tatin-cli/
+sudo ./uninstall.sh
+
+# For user-only installation
+cd ~/.local/lib/tatin-cli/
+./uninstall.sh
+```
+
+### Windows
+```powershell
+# For system-wide installation
+cd "C:\Program Files\TatinCLI"
+.\uninstall.bat
+
+# For user-only installation
+cd "$env:LOCALAPPDATA\TatinCLI"
+.\uninstall.bat
+```
+
+> **Note**: On Windows, you may need to run the command prompt as Administrator for system-wide installations.
 
 ## Usage
 
@@ -111,7 +143,7 @@ TatinCLI is built using:
 
 ## TODO
 
-- [ ] Add support for Windows environments
+- [x] Add support for Windows environments
 - [ ] Add support for private registries configuration
 - [ ] Create automated tests for all commands
 - [ ] Implement parallel package installation

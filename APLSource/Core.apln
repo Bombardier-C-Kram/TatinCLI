@@ -213,9 +213,8 @@
         _←DebugLog'Searching for: ',query
         
         ⍝ Call Tatin FindDependencies for search
-        result←⎕SE.Tatin.FindDependencies query '[*]'  ⍝ Search all registries
         ⎕←'Search results for "',query,'":'
-        ⎕←⍕result
+        ⎕←'Search not implemented yet, but check https://tatin.dev/v1/packages for results...'
         'Search completed'
     }
 

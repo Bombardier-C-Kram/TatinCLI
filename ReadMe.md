@@ -148,8 +148,6 @@ TatinCLI is built using:
 - [x] Add support for Windows environments
 - [ ] Add support for private registries configuration
 - [ ] Create automated tests for all commands
-- [ ] Implement parallel package installation
-- [ ] Support for package rollback/downgrade
 - [ ] Add shell completion scripts (bash/zsh)
 - [ ] Create CI/CD integration
 

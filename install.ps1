@@ -18,7 +18,7 @@ Options:
 
 Examples:
   .\install.ps1              # System-wide install (requires admin)
-  .\install.ps1 -UserOnly    # User-only install
+  .\install.ps1 -UserOnly    # User-only install (default, if not run as admin)
 "@
     exit 0
 }
@@ -112,8 +112,9 @@ try {
     $WrapperContent = @"
 @echo off
 REM TatinCLI Wrapper - Auto-generated
-cd /d "$TargetDir"
-powershell -ExecutionPolicy Bypass -Command "& '$DyalogScript' .\tatin %*"
+REM Pass the installation directory to tatin
+set INSTALL_DIR=$TargetDir\
+powershell -ExecutionPolicy Bypass -Command "& '$DyalogScript' '$TargetDir\tatin' %*"
 "@
     $WrapperContent | Out-File -FilePath "$TargetDir\tatin.bat" -Encoding ASCII
 

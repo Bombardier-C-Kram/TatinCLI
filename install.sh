@@ -100,8 +100,8 @@ echo "Creating wrapper script..."
 cat > "$BIN_DIR/tatin" << EOF
 #!/bin/bash
 # TatinCLI wrapper script
-cd "$INSTALL_DIR"
-./tatin "\$@"
+# Pass the installation directory to tatin
+INSTALL_DIR="$INSTALL_DIR/" "$INSTALL_DIR/tatin" "\$@"
 EOF
 
 # Make executable

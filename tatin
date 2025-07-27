@@ -2,5 +2,8 @@
 ⎕←'Starting TatinCLI...'
 ⎕SE.(⍎⊃2⎕FIX'/StartupSession.aplf',⍨2⎕NQ#'GetEnvironment' 'DYALOG')
 ⎕←'Session initialized.'
-_←⎕SE.Link.Import '#' './APLSource'
+⍝ Store installation directory
+INSTALL_DIR←2⎕NQ#'GetEnvironment' 'INSTALL_DIR'
+⍝ Import APLSource from installation directory
+_←⎕SE.Link.Import '#' (INSTALL_DIR,'./APLSource')
 main

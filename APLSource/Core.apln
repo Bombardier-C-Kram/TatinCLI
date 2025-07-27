@@ -91,7 +91,7 @@
     ⍝ Show version information and return exit code
     ShowVersion←{
         _←DebugLog'ShowVersion called'
-        ⎕←'TatinCLI v1.0.3'
+        ⎕←'TatinCLI v1.0.4'
         ⎕←'Dyalog APL wrapper for Tatin package manager'
         _←DebugLog'Version info prepared'
         0

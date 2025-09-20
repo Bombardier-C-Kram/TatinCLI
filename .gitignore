@@ -1,0 +1,2 @@
+# Nix: When running `nix build ./nix`, the resulting tatin script is inside ./result/bin/tatin
+result

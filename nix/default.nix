@@ -13,13 +13,12 @@
 
   buildPhase = ''
     mkdir -p "$out/bin"
-    cp tatin "$out/bin"
-    sed -i 1d "$out/bin/tatin"
-    sed -i '1s/^/#!${lib.escape ["/"] "${dyalog}/bin/dyalogscript DYALOG_INITSESSION=1"}\n/' "$out/bin/tatin"
-    chmod +x $out/bin/tatin
-
+    cp tatin "$out"
     cp -r APLSource "$out"
-    export INSTALL_DIR="$out"
+    touch "$out/bin/tatin"
+    echo "#!/usr/bin/env sh" >> "$out/bin/tatin"
+    echo 'INSTALL_DIR="${placeholder "out"}/" ${dyalog}/bin/dyalogscript DYALOG_INITSESSION=1 "${placeholder "out"}/tatin" $@' >> "$out/bin/tatin"
+    chmod +x $out/bin/tatin
   '';
 
   meta = {

@@ -1,5 +1,5 @@
 {
-  description = "raylibAPL is a library made to write cross-platform graphical applications using the Dyalog APL programming language";
+  description = "A command-line interface for the Tatin package manager, allowing you to manage APL packages from your terminal";
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";

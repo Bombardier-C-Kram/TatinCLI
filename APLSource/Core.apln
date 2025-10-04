@@ -145,8 +145,7 @@
         
         ⍝ Call Tatin InstallPackages
         result←⎕SE.Tatin.InstallPackages package target
-        ⎕←'Successfully installed: ',⍕result
-        'Package installed successfully'
+        {0=⍴⍵:'Installation failed, see above for error.'⋄'Successfully installed: ',⍕⍵}result
     }
 
     ⍝ Handle uninstall command

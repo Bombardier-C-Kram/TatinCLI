@@ -3,7 +3,7 @@
 
 
 
-A command-line interface for the [Tatin](https://tatin.dev) package manager, allowing you to manage APL packages from your terminal.
+A (WIP) command-line interface for the [Tatin](https://tatin.dev) package manager, allowing you to manage APL packages from your terminal.
 
 ## Overview
 
@@ -153,6 +153,7 @@ TatinCLI is built using:
 
 ## Notes
 
+- Check out the [Tatin documentation](https://tatin.dev/v1/documentation) for some more details on Tatin itself.
 - Package names can include version specifiers (e.g., `APLPage-1.0.0`)
 - The update command checks for and installs newer versions of all packages
 - Use `--verbose` to see detailed operation logs

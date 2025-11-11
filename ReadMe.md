@@ -165,4 +165,4 @@ Contributions are welcome! This project is written in Dyalog APL.
 
 ## License
 
-This project's license can be found [here](LICENSE.MD)
+This project's license can be found [here](LICENSE.md)
